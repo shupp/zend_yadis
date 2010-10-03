@@ -1,24 +1,24 @@
 <?php
 /**
- * Common base class for for Zend_Yadis and Zend_Yadis_Xri
+ * Common base class for for Zend_OpenId_Yadis and Zend_OpenId_Yadis_Xri
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
 
 /**
- * Common base class for for Zend_Yadis and Zend_Yadis_Xri
+ * Common base class for for Zend_OpenId_Yadis and Zend_OpenId_Yadis_Xri
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
-abstract class Zend_Yadis_Common
+abstract class Zend_OpenId_Yadis_Common
 {
     /*
      * Array of characters which if found at the 0 index of a Yadis ID string
@@ -57,7 +57,7 @@ abstract class Zend_Yadis_Common
      *
      * @param Zend_Config|array $options Options for Zend_Http_Client
      *
-     * @return Zend_Yadis
+     * @return Zend_OpenId_Yadis
      */
     public function setHttpClientConfig($options)
     {
@@ -90,7 +90,7 @@ abstract class Zend_Yadis_Common
      *
      * @param Zend_Http_Client $client Instance of Zend_Http_Client
      *
-     * @return Zend_Yadis_Common
+     * @return Zend_OpenId_Yadis_Common
      */
     public function setHttpClient(Zend_Http_Client $client)
     {

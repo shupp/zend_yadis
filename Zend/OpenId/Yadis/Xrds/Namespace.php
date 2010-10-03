@@ -35,30 +35,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
 
-/** Zend_Yadis */
-require_once 'Zend/Yadis.php';
+/** Zend_OpenId_Yadis */
+require_once 'Zend/OpenId/Yadis.php';
 
-/** Zend_Yadis_Exception */
-require_once 'Zend/Yadis/Exception.php';
+/** Zend_OpenId_Yadis_Exception */
+require_once 'Zend/OpenId/Yadis/Exception.php';
 
 /**
- * The Zend_Yadis_Xrds_Namespace class is a container for namespaces
+ * The Zend_OpenId_Yadis_Xrds_Namespace class is a container for namespaces
  * which need to be registered to an XML parser in order to correctly consume
  * an XRDS document using the parser's XPath functionality.
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
-class Zend_Yadis_Xrds_Namespace
+class Zend_OpenId_Yadis_Xrds_Namespace
 {
 
     /**
@@ -100,16 +100,16 @@ class Zend_Yadis_Xrds_Namespace
         if (!isset($namespaceKey) || !isset($namespaceUrl)
                    || empty($namespaceKey) || empty($namespaceUrl)) {
 
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Parameters must be non-empty strings'
             );
-        } elseif (!Zend_Yadis::validateUri($namespaceUrl)) {
-            throw new Zend_Yadis_Exception(
+        } elseif (!Zend_OpenId_Yadis::validateUri($namespaceUrl)) {
+            throw new Zend_OpenId_Yadis_Exception(
                 'Invalid namespace URI: '
                 . htmlentities($namespaceUrl, ENT_QUOTES, 'utf-8')
             );
         } elseif (array_key_exists($namespaceKey, $this->getNamespaces())) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'You may not redefine the "xrds" or "xrd" XML Namespaces'
             ); 
         }

@@ -35,34 +35,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category   Zend
- * @package    Zend_Yadis
+ * @package    Zend_OpenId_Yadis
  * @author     Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
  * @version    $Id: Service.php 290041 2009-10-29 05:46:30Z shupp $
  */
 
-/** Zend_Yadis_Xrds */
-require_once 'Zend/Yadis/Xrds.php';
+/** Zend_OpenId_Yadis_Xrds */
+require_once 'Zend/OpenId/Yadis/Xrds.php';
 
-/** Zend_Yadis_Service */
-require_once 'Zend/Yadis/Service.php';
+/** Zend_OpenId_Yadis_Service */
+require_once 'Zend/OpenId/Yadis/Service.php';
 
 /**
- * The Zend_Yadis_Xrds_Service class is a wrapper for Service elements
+ * The Zend_OpenId_Yadis_Xrds_Service class is a wrapper for Service elements
  * of an XRD document which is parsed using SimpleXML, and contains methods for
  * retrieving data about each Service, including Type, Url and other arbitrary
  * data added in a separate namespace, e.g. openid:Delegate for OpenID 1.1.
  *
- * This class extends the basic Zend_Yadis_Xrds wrapper to implement a
+ * This class extends the basic Zend_OpenId_Yadis_Xrds wrapper to implement a
  * Service object specific to the Yadis Specification 1.0. XRDS itself is not
  * an XML format ruled by Yadis, but by an OASIS proposal.
  *
  * @category   Zend
- * @package    Zend_Yadis
+ * @package    Zend_OpenId_Yadis
  * @author     Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
  */
-class Zend_Yadis_Xrds_Service extends Zend_Yadis_Xrds implements Iterator
+class Zend_OpenId_Yadis_Xrds_Service extends Zend_OpenId_Yadis_Xrds implements Iterator
 {
 
     /**
@@ -96,12 +96,12 @@ class Zend_Yadis_Xrds_Service extends Zend_Yadis_Xrds implements Iterator
     /**
      * Constructor; Accepts an XRD document for parsing.
      * Parses the XRD document by <xrd:Service> element to construct an array
-     * of Zend_Yadis_Service objects ordered by their priority.
+     * of Zend_OpenId_Yadis_Service objects ordered by their priority.
      *
      * @param   SimpleXMLElement $xrds
-     * @param   Zend_Yadis_Xrds_Namespace $namespace
+     * @param   Zend_OpenId_Yadis_Xrds_Namespace $namespace
      */
-    public function __construct(SimpleXMLElement $xrds, Zend_Yadis_Xrds_Namespace $namespace)
+    public function __construct(SimpleXMLElement $xrds, Zend_OpenId_Yadis_Xrds_Namespace $namespace)
     {
         parent::__construct($xrds, $namespace);
         /**
@@ -114,10 +114,10 @@ class Zend_Yadis_Xrds_Service extends Zend_Yadis_Xrds implements Iterator
         $this->_namespace->registerXpathNamespaces($this->_xrdNode);
         $services = $this->_xrdNode->xpath('xrd:Service');
         foreach ($services as $service) {
-            $serviceObj = new Zend_Yadis_Service($service, $this->_namespace);
+            $serviceObj = new Zend_OpenId_Yadis_Service($service, $this->_namespace);
             $this->_addService($serviceObj);
         }
-        $this->_services = Zend_Yadis_Xrds::sortByPriority($this->_services);
+        $this->_services = Zend_OpenId_Yadis_Xrds::sortByPriority($this->_services);
     }
 
     /**
@@ -125,7 +125,7 @@ class Zend_Yadis_Xrds_Service extends Zend_Yadis_Xrds implements Iterator
      * 
      * Return the current element.
      *
-     * @return Zend_Yadis_Service
+     * @return Zend_OpenId_Yadis_Service
      */ 
     public function current()
     {
@@ -183,9 +183,9 @@ class Zend_Yadis_Xrds_Service extends Zend_Yadis_Xrds implements Iterator
      * a missing or invalid priority should be shuffled to the bottom
      * of the priority order.
      *
-     * @param Zend_Yadis_Service $service
+     * @param Zend_OpenId_Yadis_Service $service
      */
-    protected function _addService(Zend_Yadis_Service $service)
+    protected function _addService(Zend_OpenId_Yadis_Service $service)
     {
         $servicePriority = $service->getPriority();
         if(is_null($servicePriority) || !is_numeric($servicePriority)) {

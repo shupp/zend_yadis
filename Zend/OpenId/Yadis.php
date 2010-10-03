@@ -35,7 +35,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category Services
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
@@ -44,23 +44,23 @@
 /**
  *  required files
  */
-require_once 'Zend/Yadis/Common.php';
-require_once 'Zend/Yadis/Xrds/Service.php';
-require_once 'Zend/Yadis/Exception.php';
-require_once 'Zend/Yadis/Xrds/Namespace.php';
-require_once 'Zend/Yadis/Xri.php';
+require_once 'Zend/OpenId/Yadis/Common.php';
+require_once 'Zend/OpenId/Yadis/Xrds/Service.php';
+require_once 'Zend/OpenId/Yadis/Exception.php';
+require_once 'Zend/OpenId/Yadis/Xrds/Namespace.php';
+require_once 'Zend/OpenId/Yadis/Xri.php';
 require_once 'Zend/HTTP/Client.php';
 require_once 'Zend/Uri/Http.php';
 
 /**
- * Zend_Yadis class
+ * Zend_OpenId_Yadis class
  *
- * Zend_Yadis will provide a method of Service Discovery implemented
+ * Zend_OpenId_Yadis will provide a method of Service Discovery implemented
  * in accordance with the Yadis Specification 1.0. This describes a protocol
  * for locating an XRD document which details Services available. The XRD is
  * typically specific to a single user, identified by their Yadis ID.
- * Zend_Yadis_XRDS will be a wrapper which is responsible for parsing
- * and presenting an iterable list of Zend_Yadis_Service objects
+ * Zend_OpenId_Yadis_XRDS will be a wrapper which is responsible for parsing
+ * and presenting an iterable list of Zend_OpenId_Yadis_Service objects
  * holding the data for each specific Service discovered.
  *
  * Note that class comments cannot substitute for a full understanding of the
@@ -74,7 +74,7 @@ require_once 'Zend/Uri/Http.php';
  *      Example 1: OpenID Service Discovery
  *
  *      $openid = 'http://padraic.astrumfutura.com';
- *      $yadis = new Zend_Yadis($openid);
+ *      $yadis = new Zend_OpenId_Yadis($openid);
  *      $yadis->addNamespace('openid', 'http://openid.net/xmlns/1.0');
  *      $serviceList = $yadis->discover();
  *
@@ -91,12 +91,12 @@ require_once 'Zend/Uri/Http.php';
  *      Priority is 0
  *
  * @category Services
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
-class Zend_Yadis extends Zend_Yadis_Common
+class Zend_OpenId_Yadis extends Zend_OpenId_Yadis_Common
 {
     /**
      * Constants referring to Yadis response types
@@ -143,10 +143,10 @@ class Zend_Yadis extends Zend_Yadis_Common
     protected $xrdsLocationHeaderUrl = '';
 
     /**
-     * Instance of Zend_Yadis_Xrds_Namespace for managing namespaces
+     * Instance of Zend_OpenId_Yadis_Xrds_Namespace for managing namespaces
      * associated with an XRDS document.
      *
-     * @var Zend_Yadis_Xrds_Namespace
+     * @var Zend_OpenId_Yadis_Xrds_Namespace
      */
     protected $namespace = null;
 
@@ -172,7 +172,7 @@ class Zend_Yadis extends Zend_Yadis_Common
      * Allows settings of the initial Yadis ID (an OpenID URL for example) and
      * an optional list of additional namespaces. For example, OpenID uses a
      * namespace such as: xmlns:openid="http://openid.net/xmlns/1.0"
-     * Namespaces are assigned to a Zend_Yadis_Xrds_Namespace container
+     * Namespaces are assigned to a Zend_OpenId_Yadis_Xrds_Namespace container
      * object to be passed more easily to other objects being
      *
      * @param string $yadisId    Optional Yadis ID
@@ -182,7 +182,7 @@ class Zend_Yadis extends Zend_Yadis_Common
      */
     public function __construct($yadisId = null, array $namespaces = array())
     {
-        $this->namespace = new Zend_Yadis_Xrds_Namespace;
+        $this->namespace = new Zend_OpenId_Yadis_Xrds_Namespace;
         $this->addNamespaces($namespaces);
         if (isset($yadisId)) {
             $this->setYadisId($yadisId);
@@ -216,7 +216,7 @@ class Zend_Yadis extends Zend_Yadis_Common
     public function getYadisId()
     {
         if (!isset($this->yadisId)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'No Yadis ID has been set on this object yet'
             );
         }
@@ -230,8 +230,8 @@ class Zend_Yadis extends Zend_Yadis_Common
      *
      * @param string $yadisId The Yadis ID
      *
-     * @return Zend_Yadis
-     * @throws Zend_Yadis_Exception
+     * @return Zend_OpenId_Yadis
+     * @throws Zend_OpenId_Yadis_Exception
      */
     public function setYadisUrl($yadisId)
     {
@@ -249,7 +249,7 @@ class Zend_Yadis extends Zend_Yadis_Common
         if (stripos($yadisId, 'xri://') === 0 ||
             in_array($yadisId[0], $this->xriIdentifiers)) {
 
-            $xri = Zend_Yadis_Xri::getInstance();
+            $xri = Zend_OpenId_Yadis_Xri::getInstance();
 
             $xri->setHttpClientConfig($this->getHttpClientConfig());
             $this->yadisUrl = $xri->setNamespace($this->namespace)->toUri($yadisId);
@@ -261,7 +261,7 @@ class Zend_Yadis extends Zend_Yadis_Common
          * The use of IRIs (International Resource Identifiers) is governed by
          * RFC 3490-3495. Not yet available for validation Zend.
          */
-        throw new Zend_Yadis_Exception(
+        throw new Zend_OpenId_Yadis_Exception(
             'Unable to validate a Yadis ID as a URI, '
             . 'or to transform a Yadis ID into a valid URI.'
         );
@@ -277,7 +277,7 @@ class Zend_Yadis extends Zend_Yadis_Common
     public function getYadisUrl()
     {
         if (!isset($this->yadisUrl)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'No Yadis ID/URL has been set on this object yet'
             );
         }
@@ -290,7 +290,7 @@ class Zend_Yadis extends Zend_Yadis_Common
      *
      * @param array $namespaces Array of namespaces
      *
-     * @return  Zend_Yadis
+     * @return  Zend_OpenId_Yadis
      */
     public function addNamespaces(array $namespaces)
     {
@@ -305,7 +305,7 @@ class Zend_Yadis extends Zend_Yadis_Common
      * @param string $namespace    The namespace name
      * @param string $namespaceUrl The namespace url
      *
-     * @return Zend_Yadis
+     * @return Zend_OpenId_Yadis
      */
     public function addNamespace($namespace, $namespaceUrl)
     {
@@ -338,11 +338,11 @@ class Zend_Yadis extends Zend_Yadis_Common
     /**
      * Performs Service Discovery, i.e. the requesting and parsing of a valid
      * Yadis (XRD) document into a list of Services and Service Data. The
-     * return value will be an instance of Zend_Yadis_Xrds which will
+     * return value will be an instance of Zend_OpenId_Yadis_Xrds which will
      * implement SeekableIterator. Returns FALSE on failure.
      *
-     * @return Zend_Yadis_Xrds|boolean
-     * @throws Zend_Yadis_Exception
+     * @return Zend_OpenId_Yadis_Xrds|boolean
+     * @throws Zend_OpenId_Yadis_Exception
      */
     public function discover()
     {
@@ -353,11 +353,11 @@ class Zend_Yadis extends Zend_Yadis_Common
 
         // Check XRI first
         if (in_array($this->yadisId[0], $this->xriIdentifiers)) {
-            $xri                = Zend_Yadis_Xri::getInstance();
+            $xri                = Zend_OpenId_Yadis_Xri::getInstance();
             $xrds               = $xri->toCanonicalID($xri->getXri());
             $this->httpResponse = $xri->getHttpResponse();
 
-            return new Zend_Yadis_Xrds_Service($xrds, $this->namespace);
+            return new Zend_OpenId_Yadis_Xrds_Service($xrds, $this->namespace);
         }
 
         while ($xrdsDocument === null) {
@@ -371,7 +371,7 @@ class Zend_Yadis extends Zend_Yadis_Common
              * xrdStatus flag to true.
              */
             if (!$responseType == self::XRDS_CONTENT_TYPE && $xrdStatus == true) {
-                throw new Zend_Yadis_Exception(
+                throw new Zend_OpenId_Yadis_Exception(
                     'Yadis protocol could not locate a valid XRD document'
                 );
             }
@@ -396,7 +396,7 @@ class Zend_Yadis extends Zend_Yadis_Common
                 $xrdsDocument = $this->httpResponse->getBody();
                 break;
             default:
-                throw new Zend_Yadis_Exception(
+                throw new Zend_OpenId_Yadis_Exception(
                     'Yadis protocol could not locate a valid XRD document'
                 );
             }
@@ -405,7 +405,7 @@ class Zend_Yadis extends Zend_Yadis_Common
         try {
             $serviceList = $this->parseXrds($xrdsDocument);
         } catch (Exception $e) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'XRD Document could not be parsed with the following message: '
                 . $e->getMessage(), $e->getCode());
         }
@@ -452,7 +452,7 @@ class Zend_Yadis extends Zend_Yadis_Common
         try {
             return $this->_sendRequest();
         } catch (Zend_Http_Client_Exception $e) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Invalid response to Yadis protocol received: ' . $e->getMessage(),
                 $e->getMessage()
             );
@@ -478,7 +478,7 @@ class Zend_Yadis extends Zend_Yadis_Common
         if (empty($location)) {
             return false;
         } elseif (!self::validateUri($location)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Invalid URI found during Discovery for location of XRDS document:'
                 . htmlentities($location, ENT_QUOTES, 'utf-8')
             );
@@ -515,7 +515,7 @@ class Zend_Yadis extends Zend_Yadis_Common
      * @param Zend_Http_Response $response Instance of Zend_Http_Response
      *
      * @return boolean
-     * @throws Zend_Yadis_Exception
+     * @throws Zend_OpenId_Yadis_Exception
      */
     protected function isMetaHttpEquiv(Zend_Http_Response $response)
     {
@@ -551,7 +551,7 @@ class Zend_Yadis extends Zend_Yadis_Common
         if (is_null($location)) {
             return false;
         } elseif (!self::validateUri($location)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'The URI parsed from the HTML Alias document appears to be invalid, '
                 . 'or could not be found: '
                 . htmlentities($location, ENT_QUOTES, 'utf-8')
@@ -567,13 +567,13 @@ class Zend_Yadis extends Zend_Yadis_Common
     }
 
     /**
-     * Creates a new Zend_Yadis_Xrds object which uses SimpleXML to
-     * parse the XML into a list of Iterable Zend_Yadis_Service
+     * Creates a new Zend_OpenId_Yadis_Xrds object which uses SimpleXML to
+     * parse the XML into a list of Iterable Zend_OpenId_Yadis_Service
      * objects.
      *
      * @param string $xrdsDocument The plaintext XRDS document
      *
-     * @return Zend_Yadis_Xrds|boolean
+     * @return Zend_OpenId_Yadis_Xrds|boolean
      */
     protected function parseXrds($xrdsDocument)
     {
@@ -582,6 +582,6 @@ class Zend_Yadis extends Zend_Yadis_Common
         $xrds    = new SimpleXMLElement($xrdsDocument);
         libxml_use_internal_errors($origVal);
         
-        return new Zend_Yadis_Xrds_Service($xrds, $this->namespace);
+        return new Zend_OpenId_Yadis_Xrds_Service($xrds, $this->namespace);
     }
 }

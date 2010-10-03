@@ -35,7 +35,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
@@ -44,27 +44,27 @@
 /** Zend_Http_Client */
 require_once 'Zend/HTTP/Client.php';
 
-/** Zend_Yadis_Common **/
-require_once 'Zend/Yadis/Common.php';
+/** Zend_OpenId_Yadis_Common **/
+require_once 'Zend/OpenId/Yadis/Common.php';
 
-/** Zend_Yadis_Exception */
-require_once 'Zend/Yadis/Exception.php';
+/** Zend_OpenId_Yadis_Exception */
+require_once 'Zend/OpenId/Yadis/Exception.php';
 
 /**
  * Provides methods for translating an XRI into a URI.
  *
  * @category Zend
- * @package  Zend_Yadis
+ * @package  Zend_OpenId_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
-class Zend_Yadis_Xri extends Zend_Yadis_Common
+class Zend_OpenId_Yadis_Xri extends Zend_OpenId_Yadis_Common
 {
     /**
      * Hold an instance of this object per the Singleton Pattern.
      *
-     * @var Zend_Yadis_Xri
+     * @var Zend_OpenId_Yadis_Xri
      */
     protected static $instance = null;
 
@@ -76,10 +76,10 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
     protected $proxy = 'http://xri.net/';
 
     /**
-     * Instance of Zend_Yadis_Xrds_Namespace for managing namespaces
+     * Instance of Zend_OpenId_Yadis_Xrds_Namespace for managing namespaces
      * associated with an XRDS document.
      *
-     * @var Zend_Yadis_Xrds_Namespace
+     * @var Zend_OpenId_Yadis_Xrds_Namespace
      */
     protected $namespace = null;
 
@@ -124,7 +124,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
     /**
      * Return a singleton instance of this class.
      *
-     * @return  Zend_Yadis_Xri
+     * @return  Zend_OpenId_Yadis_Xri
      */
     public static function getInstance()
     {
@@ -138,11 +138,11 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
      * Set a Namespace object which contains all relevant namespaces
      * for XPath queries on this Yadis resource.
      *
-     * @param Zend_Yadis_Xrds_Namespace $namespace Instance
+     * @param Zend_OpenId_Yadis_Xrds_Namespace $namespace Instance
      *
-     * @return Zend_Yadis_Xri
+     * @return Zend_OpenId_Yadis_Xri
      */
-    public function setNamespace(Zend_Yadis_Xrds_Namespace $namespace)
+    public function setNamespace(Zend_OpenId_Yadis_Xrds_Namespace $namespace)
     {
         $this->namespace = $namespace;
         return $this;
@@ -153,13 +153,13 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
      *
      * @param string $proxy The Proxy server URI
      *
-     * @return Zend_Yadis_Xri
-     * @throws Zend_Yadis_Exception
+     * @return Zend_OpenId_Yadis_Xri
+     * @throws Zend_OpenId_Yadis_Exception
      */
     public function setProxy($proxy)
     {
         if (!self::validateUri($proxy)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Invalid URI; unable to set as an XRI proxy'
             );
         }
@@ -182,8 +182,8 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
      *
      * @param string $xri XRI to be translated
      *
-     * @return Zend_Yadis_Xri
-     * @throws Zend_Yadis_Exception
+     * @return Zend_OpenId_Yadis_Xri
+     * @throws Zend_OpenId_Yadis_Exception
      */
     public function setXri($xri)
     {
@@ -193,7 +193,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
         if (stripos($xri, 'xri://') === false
             && !in_array($xri[0], $this->xriIdentifiers)) {
 
-            throw new Zend_Yadis_Exception('Invalid XRI string submitted');
+            throw new Zend_OpenId_Yadis_Exception('Invalid XRI string submitted');
         }
         $this->xri = $xri;
         return $this;
@@ -218,8 +218,8 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
      * @param string $serviceType The Service Type
      *
      * @return string
-     * @throws Zend_Yadis_Exception
-     * @uses Zend_Yadis
+     * @throws Zend_OpenId_Yadis_Exception
+     * @uses Zend_OpenId_Yadis
      */
     public function toUri($xri = null, $serviceType = null)
     {
@@ -247,7 +247,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
         }
         $uri = $this->getProxy() . $iname;
         if (!self::validateUri($uri)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Unable to translate XRI to a valid URI using proxy: '
                 . $this->getProxy()
             );
@@ -266,14 +266,14 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
      *
      * @todo Imcomplete; requires interface from Yadis main class
      * @return string
-     * @throws Zend_Yadis_Exception
+     * @throws Zend_OpenId_Yadis_Exception
      */
     public function toCanonicalId($xri = null)
     {
         if (!isset($xri) && !isset($this->uri)) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'No XRI passed as parameter as required unless called after '
-                . 'Zend_Yadis_Xri:toUri'
+                . 'Zend_OpenId_Yadis_Xri:toUri'
             );
         } elseif (isset($xri)) {
             $uri = $this->toUri($xri);
@@ -285,7 +285,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
 
         $type = $this->httpResponse->getHeader('Content-Type');
         if (stripos($type, 'application/xrds+xml') === false) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'The response header indicates the response body is not '
                 . 'an XRDS document'
             );
@@ -299,7 +299,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
         $id                = $xrds->xpath('//xrd:CanonicalID[last()]');
         $this->canonicalID = (string)array_shift($id);
         if (!$this->canonicalID) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Unable to determine canonicalID'
             );
         }
@@ -309,7 +309,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
     /**
      * Gets the Canonical ID
      * 
-     * @throws Zend_Yadis_Exception if the XRI is null
+     * @throws Zend_OpenId_Yadis_Exception if the XRI is null
      * @return string
      */
     public function getCanonicalId()
@@ -318,7 +318,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
             return $this->canonicalID;
         }
         if ($this->xri === null) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Unable to get a Canonical Id since no XRI value has been set'
             );
         }
@@ -356,7 +356,7 @@ class Zend_Yadis_Xri extends Zend_Yadis_Common
             $this->httpResponse = $this->_sendRequest();
             return $this->httpResponse;
         } catch (Zend_Http_Client_Exception $e) {
-            throw new Zend_Yadis_Exception(
+            throw new Zend_OpenId_Yadis_Exception(
                 'Invalid response to Yadis protocol received: '
                 . $e->getMessage(),
                 $e->getCode()

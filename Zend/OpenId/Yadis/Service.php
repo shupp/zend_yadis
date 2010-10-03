@@ -35,22 +35,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @category   Zend
- * @package    Zend_Yadis
+ * @package    Zend_OpenId_Yadis
  * @author     Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
  * @version    $Id: Service.php 281033 2009-05-24 14:28:37Z clockwerx $
  */
 
 /**
- * The Zend_Yadis_Service class represents a service parsed from the
+ * The Zend_OpenId_Yadis_Service class represents a service parsed from the
  * XRD node of a Yadis 1.0 XRDS document.
  *
  * @category   Zend
- * @package    Zend_Yadis
+ * @package    Zend_OpenId_Yadis
  * @author     Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
  */
-class Zend_Yadis_Service
+class Zend_OpenId_Yadis_Service
 {
 
     /**
@@ -71,13 +71,13 @@ class Zend_Yadis_Service
 
     /**
      * Class constructor; initialise the object with a Service node from the
-     * XRDS document, and the current Zend_Yadis_Xrds_Namespace
+     * XRDS document, and the current Zend_OpenId_Yadis_Xrds_Namespace
      * object to provide the current namespaces for using XPath queries.
      *
      * @param   SimpleXMLElement $serviceNode
-     * @param   Zend_Yadis_Xrds_Namespace $namespace
+     * @param   Zend_OpenId_Yadis_Xrds_Namespace $namespace
      */
-    public function __construct(SimpleXMLElement $serviceNode, Zend_Yadis_Xrds_Namespace $namespace)
+    public function __construct(SimpleXMLElement $serviceNode, Zend_OpenId_Yadis_Xrds_Namespace $namespace)
     {
         $this->_serviceNode = $serviceNode;
         $this->_namespace = $namespace;
@@ -157,9 +157,9 @@ class Zend_Yadis_Service
     }
 
     /**
-     * Return the current Zend_Yadis_Xrds_Namespace object.
+     * Return the current Zend_OpenId_Yadis_Xrds_Namespace object.
      *
-     * @return  Zend_Yadis_Xrds_Namespace
+     * @return  Zend_OpenId_Yadis_Xrds_Namespace
      */
     public function getNamespaceObject()
     {
