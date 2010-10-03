@@ -244,7 +244,7 @@ class Zend_Yadis
      * for supporting alternatives (IRI,XRI,i-name) since they require additional
      * validation and conversion steps (e.g. Punycode for IRI) before use.
      *
-     * Note: The current Validate classes currently do not have complete IDNA
+     * Note: The current validate classes currently do not have complete IDNA
      * validation support for Internationalised Domain Names. To be addressed.
      *
      * @param string $yadisId The Yadis ID
