@@ -42,7 +42,7 @@
  */
 
 /** Zend_Http_Client */
-require_once 'Zend/HTTP/Client.php';
+require_once 'Zend/Http/Client.php';
 
 /** Zend_OpenId_Yadis_Common **/
 require_once 'Zend/OpenId/Yadis/Common.php';

@@ -49,7 +49,7 @@ require_once 'Zend/OpenId/Yadis/Xrds/Service.php';
 require_once 'Zend/OpenId/Yadis/Exception.php';
 require_once 'Zend/OpenId/Yadis/Xrds/Namespace.php';
 require_once 'Zend/OpenId/Yadis/Xri.php';
-require_once 'Zend/HTTP/Client.php';
+require_once 'Zend/Http/Client.php';
 require_once 'Zend/Uri/Http.php';
 
 /**
