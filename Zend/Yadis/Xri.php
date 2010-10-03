@@ -42,7 +42,7 @@
  */
 
 /** Zend_Http_Client */
-require_once 'Zend/Http/Client.php';
+require_once 'Zend/HTTP/Client.php';
 
 /** Net_URL2 */
 require_once 'Zend/Uri/Http.php';
@@ -314,7 +314,10 @@ class Zend_Yadis_Xri
             );
         }
 
-        $xrds = new SimpleXMLElement($this->httpResponse->getBody());
+        $origVal = libxml_use_internal_errors(true);
+        $xrds    = new SimpleXMLElement($this->httpResponse->getBody());
+        libxml_use_internal_errors($origVal);
+
         $this->namespace->registerXpathNamespaces($xrds);
         $id                = $xrds->xpath('//xrd:CanonicalID[last()]');
         $this->canonicalID = (string)array_shift($id);

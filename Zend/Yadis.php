@@ -665,7 +665,11 @@ class Zend_Yadis
      */
     protected function parseXrds($xrdsDocument)
     {
-        $xrds = new SimpleXMLElement($xrdsDocument);
+        // Disable displaying of errors in libxml temporarily
+        $origVal = libxml_use_internal_errors(true);
+        $xrds    = new SimpleXMLElement($xrdsDocument);
+        libxml_use_internal_errors($origVal);
+        
         return new Zend_Yadis_Xrds_Service($xrds, $this->namespace);
     }
 
