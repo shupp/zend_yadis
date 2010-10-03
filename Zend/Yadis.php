@@ -38,7 +38,7 @@
  * @package  Zend_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
- * @link     http://pear.php.net/Zend_Yadis
+ * @link     http://github.com/shupp/zend_yadis
  */
 
 /**
@@ -94,7 +94,7 @@ require_once 'Zend/Uri/Http.php';
  * @package  Zend_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
- * @link     http://pear.php.net/Zend_Yadis
+ * @link     http://github.com/shupp/zend_yadis
  */
 class Zend_Yadis extends Zend_Yadis_Common
 {

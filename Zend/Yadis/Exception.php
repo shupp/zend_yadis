@@ -37,7 +37,7 @@
  * @package  Services_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
- * @link     http://pear.php.net/package/services_yadis
+ * @link     http://github.com/shupp/zend_yadis
  */
 
 /**
@@ -47,7 +47,7 @@
  * @package  Services_Yadis
  * @author   Pádraic Brady <padraic.brady@yahoo.com>
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
- * @link     http://pear.php.net/package/services_yadis
+ * @link     http://github.com/shupp/zend_yadis
  */
 class Services_Yadis_Exception extends Exception
 {
