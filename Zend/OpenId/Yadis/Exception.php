@@ -49,7 +49,7 @@
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://github.com/shupp/zend_yadis
  */
-class Zend_OpenId_Yadis_Exception extends Zend_OpenId_Exception
+class Zend_OpenId_Yadis_Exception extends Exception
 {
 }
 ?>

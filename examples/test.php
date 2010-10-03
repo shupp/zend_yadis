@@ -4,11 +4,9 @@
 
 set_include_path(dirname(__FILE__) . '/../' . PATH_SEPARATOR . get_include_path());
 
-require_once 'HTTP/Request2.php';
-
-require_once 'Zend/Yadis.php';
+require_once 'Zend/OpenId/Yadis.php';
 foreach (array('http://www.yahoo.com', '=self*shupp') as $id) {
-    $yadis       = new Zend_Yadis($id);
+    $yadis       = new Zend_OpenId_Yadis($id);
     $serviceList = $yadis->discover();
     foreach ($serviceList as $service) {
         $types = $service->getTypes();
