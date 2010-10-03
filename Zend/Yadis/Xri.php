@@ -44,11 +44,8 @@
 /** Zend_Http_Client */
 require_once 'Zend/HTTP/Client.php';
 
-/** Net_URL2 */
-require_once 'Zend/Uri/Http.php';
-
-/** Zend_Yadis **/
-require_once 'Zend/Yadis.php';
+/** Zend_Yadis_Common **/
+require_once 'Zend/Yadis/Common.php';
 
 /** Zend_Yadis_Exception */
 require_once 'Zend/Yadis/Exception.php';
@@ -62,25 +59,14 @@ require_once 'Zend/Yadis/Exception.php';
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://pear.php.net/package/services_yadis
  */
-class Zend_Yadis_Xri
+class Zend_Yadis_Xri extends Zend_Yadis_Common
 {
-
     /**
      * Hold an instance of this object per the Singleton Pattern.
      *
      * @var Zend_Yadis_Xri
      */
     protected static $instance = null;
-
-    /*
-     * Array of characters which if found at the 0 index of a Yadis ID string
-     * may indicate the use of an XRI.
-     *
-     * @var array
-     */
-    protected $xriIdentifiers = array(
-        '=', '$', '!', '@', '+'
-    );
 
     /**
      * Default proxy to append XRI identifier to when forming a valid URI.
@@ -119,8 +105,6 @@ class Zend_Yadis_Xri
      */
     protected $canonicalID = null;
 
-    protected $httpRequestOptions = array();
-
     /**
      * Stores an array of previously performed requests.  The array key is a 
      * combination of the url, service type, and http request options.
@@ -129,13 +113,6 @@ class Zend_Yadis_Xri
      * @var array
      */
     protected $requests = array();
-
-    /**
-     * The last response using HTTP_Request2
-     * 
-     * @var HTTP_Request2_Response
-     */
-    protected $httpResponse = null;
 
     /**
      * Constructor; protected since this class is a singleton.
@@ -181,7 +158,7 @@ class Zend_Yadis_Xri
      */
     public function setProxy($proxy)
     {
-        if (!Zend_Yadis::validateUri($proxy)) {
+        if (!self::validateUri($proxy)) {
             throw new Zend_Yadis_Exception(
                 'Invalid URI; unable to set as an XRI proxy'
             );
@@ -269,7 +246,7 @@ class Zend_Yadis_Xri
             $iname = $xri;
         }
         $uri = $this->getProxy() . $iname;
-        if (!Zend_Yadis::validateUri($uri)) {
+        if (!self::validateUri($uri)) {
             throw new Zend_Yadis_Exception(
                 'Unable to translate XRI to a valid URI using proxy: '
                 . $this->getProxy()
@@ -304,10 +281,10 @@ class Zend_Yadis_Xri
             $uri = $this->uri;
         }
 
-        $this->httpResponse = $this->get($uri, null, $this->getHttpRequestOptions());
-        if (stripos($this->httpResponse->getHeader('Content-Type'),
-                                               'application/xrds+xml') === false) {
+        $this->httpResponse = $this->get($uri);
 
+        $type = $this->httpResponse->getHeader('Content-Type');
+        if (stripos($type, 'application/xrds+xml') === false) {
             throw new Zend_Yadis_Exception(
                 'The response header indicates the response body is not '
                 . 'an XRDS document'
@@ -350,29 +327,6 @@ class Zend_Yadis_Xri
     }
 
     /**
-     * Set options to be passed to the PEAR HTTP_Request2 constructor
-     *
-     * @param array $options Array of HTTP_Request2 options
-     *
-     * @return Zend_Yadis_Xri
-     */
-    public function setHttpRequestOptions(array $options)
-    {
-        $this->httpRequestOptions = $options;
-        return $this;
-    }
-
-    /**
-     * Get options to be passed to the PEAR HTTP_Request2 constructor
-     *
-     * @return array
-     */
-    public function getHttpRequestOptions()
-    {
-        return $this->httpRequestOptions;
-    }
-
-    /**
      * Required to request the root i-name (XRI) XRD which will provide an
      * error message that the i-name does not exist, or else return a valid
      * XRD document containing the i-name's Canonical ID.
@@ -380,43 +334,33 @@ class Zend_Yadis_Xri
      * @param string $url         URI
      * @param string $serviceType Optional service type
      *
-     * @return HTTP_Request
+     * @return Zend_Http_Response
      * @todo   Finish this a bit better using the QXRI rules.
      */
     protected function get($url, $serviceType = null)
     {
-        $request = new HTTP_Request2($url,
-                                     HTTP_Request2::METHOD_GET,
-                                     $this->getHttpRequestOptions());
+        $client = $this->getHttpClient();
+        $client->setMethod('GET');
+        $client->setHeaders('Accept', 'application/xrds+xml');
 
-        $netURL = new Net_URL2($url);
-        $request->setHeader('Accept', 'application/xrds+xml');
+        $client->setUri($url);
+
         if ($serviceType) {
-            $netURL->setQueryVariable('_xrd_r', 'application/xrds+xml');
-            $netURL->setQueryVariable('_xrd_t', $serviceType);
+            $client->setParameterGet('_xrd_r', 'application/xrds+xml');
+            $client->setParameterGet('_xrd_t', $serviceType);
         } else {
-            $netURL->setQueryVariable('_xrd_r', 'application/xrds+xml;sep=false');
+            $client->setParameterGet('_xrd_r', 'application/xrds+xml;sep=false');
         }
 
-        $request->setURL($netURL->getURL());
         try {
-            return $request->send();
-        } catch (HTTP_Request2_Exception $e) {
+            $this->httpResponse = $this->_sendRequest();
+            return $this->httpResponse;
+        } catch (Zend_Http_Client_Exception $e) {
             throw new Zend_Yadis_Exception(
-                'Invalid response to Yadis protocol received: ' . $e->getMessage(),
+                'Invalid response to Yadis protocol received: '
+                . $e->getMessage(),
                 $e->getCode()
             );
         }
     }
-
-    /**
-     * Returns the most recent HTTP_Request2_Response object.
-     * 
-     * @return HTTP_Request2_Response|null
-     */
-    public function getHTTPResponse()
-    {
-        return $this->httpResponse;
-    }
 }
-?>

@@ -44,6 +44,7 @@
 /**
  *  required files
  */
+require_once 'Zend/Yadis/Common.php';
 require_once 'Zend/Yadis/Xrds/Service.php';
 require_once 'Zend/Yadis/Exception.php';
 require_once 'Zend/Yadis/Xrds/Namespace.php';
@@ -95,9 +96,8 @@ require_once 'Zend/Uri/Http.php';
  * @license  http://opensource.org/licenses/bsd-license.php New BSD License
  * @link     http://pear.php.net/Zend_Yadis
  */
-class Zend_Yadis
+class Zend_Yadis extends Zend_Yadis_Common
 {
-
     /**
      * Constants referring to Yadis response types
      */
@@ -123,13 +123,6 @@ class Zend_Yadis
      * @var string
      */
     protected $yadisUrl = '';
-
-    /**
-     * Holds the response received during Service Discovery.
-     *
-     * @var HTTP_Request2_Response
-     */
-    protected $httpResponse = null;
 
     /**
      * A URL parsed from a HTML document's <meta> element inserted in
@@ -173,25 +166,6 @@ class Zend_Yadis
         'text/xml'
     );
 
-    /*
-     * Array of characters which if found at the 0 index of a Yadis ID string
-     * may indicate the use of an XRI.
-     *
-     * @var array
-     */
-    protected $xriIdentifiers = array(
-        '=', '$', '!', '@', '+'
-    );
-
-    protected $httpRequestOptions = array();
-
-    /**
-     * HTTP_Request2 object utilised by this class if externally set
-     *
-     * @var HTTP_Request2
-     */
-    protected $httpRequest = null;
-
     /**
      * Class Constructor
      *
@@ -213,29 +187,6 @@ class Zend_Yadis
         if (isset($yadisId)) {
             $this->setYadisId($yadisId);
         }
-    }
-
-    /**
-     * Set options to be passed to the PEAR HTTP_Request2 constructor
-     *
-     * @param array $options Array of options for HTTP_Request
-     *
-     * @return Zend_Yadis
-     */
-    public function setHttpRequestOptions(array $options)
-    {
-        $this->httpRequestOptions = $options;
-        return $this;
-    }
-
-    /**
-     * Get options to be passed to the PEAR HTTP_Request2 constructor
-     *
-     * @return array
-     */
-    public function getHttpRequestOptions()
-    {
-        return $this->httpRequestOptions;
     }
 
     /**
@@ -300,7 +251,7 @@ class Zend_Yadis
 
             $xri = Zend_Yadis_Xri::getInstance();
 
-            $xri->setHttpRequestOptions($this->getHttpRequestOptions());
+            $xri->setHttpClientConfig($this->getHttpClientConfig());
             $this->yadisUrl = $xri->setNamespace($this->namespace)->toUri($yadisId);
 
             return $this;
@@ -404,7 +355,7 @@ class Zend_Yadis
         if (in_array($this->yadisId[0], $this->xriIdentifiers)) {
             $xri                = Zend_Yadis_Xri::getInstance();
             $xrds               = $xri->toCanonicalID($xri->getXri());
-            $this->httpResponse = $xri->getHTTPResponse();
+            $this->httpResponse = $xri->getHttpResponse();
 
             return new Zend_Yadis_Xrds_Service($xrds, $this->namespace);
         }
@@ -462,54 +413,15 @@ class Zend_Yadis
     }
 
     /**
-     * Return the final HTTP response
-     *
-     * @return HTTP_Request2_Response
-     */
-    public function getHTTPResponse()
-    {
-        if ($this->httpResponse instanceof HTTP_Request2_Response) {
-            return $this->httpResponse;
-        }
-        return null;
-    }
-
-    /**
-     * Setter for custom HTTP_Request2 type object
-     *
-     * @param HTTP_Request2 $request Instance of HTTP_Request2
-     *
-     * @return void
-     */
-    public function setHttpRequest(HTTP_Request2 $request)
-    {
-        $this->httpRequest = $request;
-    }
-
-    /**
-     * Gets the HTTP_Request2 object
-     *
-     * @return HTTP_Request2
-     */
-    public function getHttpRequest()
-    {
-        if ($this->httpRequest === null) {
-            $this->httpRequest = new HTTP_Request2();
-            $this->httpRequest->setConfig($this->getHttpRequestOptions());
-        }
-        return $this->httpRequest;
-    }
-
-    /**
-     * Run any instance of HTTP_Request2_Response through a set of filters to
+     * Run any instance of Zend_Http_Response through a set of filters to
      * determine the Yadis Response type which in turns determines how the
      * response should be reacted to or dealt with.
      *
-     * @param HTTP_Request2_Response $request Instance of HTTP_Request2_Response
+     * @param Zend_Http_Response $request Instance of Zend_Http_Response
      *
      * @return integer
      */
-    protected function getResponseType(HTTP_Request2_Response $response)
+    protected function getResponseType(Zend_Http_Response $response)
     {
         if ($this->isXrdsContentType($response)) {
             return self::XRDS_CONTENT_TYPE;
@@ -522,24 +434,24 @@ class Zend_Yadis
     }
 
     /**
-     * Use the HTTP_Request2 to issue an HTTP GET request carrying the
+     * Use the Zend_Http_Response to issue an HTTP GET request carrying the
      * "Accept" header value of "application/xrds+xml". This can allow
      * servers to quickly respond with a valid XRD document rather than
      * forcing the client to follow the X-XRDS-Location bread crumb trail.
      *
      * @param string $url URL
      *
-     * @return HTTP_Request2
+     * @return Zend_Http_Response
      */
     protected function get($url)
     {
-        $request = $this->getHttpRequest();
-        $request->setUrl($url);
-        $request->setMethod(HTTP_REQUEST2::METHOD_GET);
-        $request->setHeader('Accept', 'application/xrds+xml');
+        $client = $this->getHttpClient();
+        $client->setUri($url);
+        $client->setMethod('GET');
+        $client->setHeaders('Accept', 'application/xrds+xml');
         try {
-            return $request->send();
-        } catch (HTTP_Request2_Exception $e) {
+            return $this->_sendRequest();
+        } catch (Zend_Http_Client_Exception $e) {
             throw new Zend_Yadis_Exception(
                 'Invalid response to Yadis protocol received: ' . $e->getMessage(),
                 $e->getMessage()
@@ -552,11 +464,11 @@ class Zend_Yadis
      * we can find the XRDS resource for this user. If exists, the value
      * is set to the private $xrdsLocationHeaderUrl property.
      *
-     * @param HTTP_Request2_Response $response Instance of HTTP_Request2_Response
+     * @param Zend_Http_Response $response Instance of Zend_Http_Response
      *
      * @return boolean
      */
-    protected function isXrdsLocationHeader(HTTP_Request2_Response $response)
+    protected function isXrdsLocationHeader(Zend_Http_Response $response)
     {
         if ($response->getHeader('x-xrds-location')) {
             $location = $response->getHeader('x-xrds-location');
@@ -579,11 +491,11 @@ class Zend_Yadis
      * Checks whether the Response contains the XRDS resource. It should, per
      * the specifications always be served as application/xrds+xml
      *
-     * @param HTTP_Request2_Response $response Instance of HTTP_Request2_Response
+     * @param Zend_Http_Response $response Instance of Zend_Http_Response
      *
      * @return boolean
      */
-    protected function isXrdsContentType(HTTP_Request2_Response $response)
+    protected function isXrdsContentType(Zend_Http_Response $response)
     {
         if (!$response->getHeader('Content-Type')
             || stripos($response->getHeader('Content-Type'),
@@ -600,12 +512,12 @@ class Zend_Yadis
      * has a http-equiv meta element with a content attribute pointing to where
      * we can fetch the XRD document.
      *
-     * @param HTTP_Request2_Response $response Instance of HTTP_Request2_Response
+     * @param Zend_Http_Response $response Instance of Zend_Http_Response
      *
      * @return boolean
      * @throws Zend_Yadis_Exception
      */
-    protected function isMetaHttpEquiv(HTTP_Request2_Response $response)
+    protected function isMetaHttpEquiv(Zend_Http_Response $response)
     {
         $location = null;
         if (!in_array($response->getHeader('Content-Type'),
@@ -671,22 +583,5 @@ class Zend_Yadis
         libxml_use_internal_errors($origVal);
         
         return new Zend_Yadis_Xrds_Service($xrds, $this->namespace);
-    }
-
-    /**
-     * Validates an HTTP URI
-     * 
-     * @param string $uri The URI to validate
-     * 
-     * @return bool
-     */
-    static public function validateUri($uri)
-    {
-        try {
-            $object = Zend_Uri_Http::fromString($uri);
-            return true;
-        } catch (Zend_Uri_Exception $e) {
-            return false;
-        }
     }
 }
