@@ -259,7 +259,7 @@ class Zend_Yadis extends Zend_Yadis_Common
 
         /**
          * The use of IRIs (International Resource Identifiers) is governed by
-         * RFC 3490-3495. Not yet available for validation in PEAR.
+         * RFC 3490-3495. Not yet available for validation Zend.
          */
         throw new Zend_Yadis_Exception(
             'Unable to validate a Yadis ID as a URI, '
@@ -404,7 +404,7 @@ class Zend_Yadis extends Zend_Yadis_Common
 
         try {
             $serviceList = $this->parseXrds($xrdsDocument);
-        } catch (PEAR_Exception $e) {
+        } catch (Exception $e) {
             throw new Zend_Yadis_Exception(
                 'XRD Document could not be parsed with the following message: '
                 . $e->getMessage(), $e->getCode());

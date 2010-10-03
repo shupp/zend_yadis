@@ -1,6 +1,6 @@
 <?php
 /**
- * Exception subclass of PEAR_Exception for Services_Yadis.
+ * Exception subclass of Exception for Services_Yadis.
  *
  * PHP version 5
  *
